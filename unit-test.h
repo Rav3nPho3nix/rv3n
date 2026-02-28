@@ -259,6 +259,8 @@ void run_tests() {
     printf("%sTOTAL  : %u%s\n", COLOR_WHITE_BOLD, passed + failed, COLOR_RESET);
     printf("%sPASSED : %u%s\n", COLOR_GREEN_BOLD, passed, COLOR_RESET);
     printf("%sFAILED : %u%s\n", COLOR_RED_BOLD, failed, COLOR_RESET);
+
+    free(tests);
 }
 
 #endif
