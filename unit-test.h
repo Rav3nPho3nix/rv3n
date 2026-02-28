@@ -141,18 +141,16 @@
 
 #define NOT_EQUAL_STR(a, b) { \
     assertions->assertions_total++; \
-    bool isEqual = true; \
     size_t i = 0; \
-    while (isEqual && a[i] != '\0') { \
-        if (a[i] != b[i] || b[i] == '\0') { \
-            isEqual = false; \
-            assertions->assertions_passed++; \
-        } \
+    while (a[i] != '\0' && b[i] != '\0' && a[i] == b[i]) { \
         i++; \
     } \
-    if (isEqual) { \
+    if (a[i] == b[i]) { \
         printf("%sFAILED : \"%s\" == \"%s\"%s\n", COLOR_RED_BOLD, a, b, COLOR_RESET); \
         assertions->test_failed = true; \
+    } \
+    else { \
+        assertions->assertions_passed++; \
     } \
 }
 
