@@ -139,6 +139,23 @@
     } \
 }
 
+#define NOT_EQUAL_STR(a, b) { \
+    assertions->assertions_total++; \
+    bool isEqual = true; \
+    size_t i = 0; \
+    while (isEqual && a[i] != '\0') { \
+        if (a[i] != b[i] || b[i] == '\0') { \
+            isEqual = false; \
+            assertions->assertions_passed++; \
+        } \
+        i++; \
+    } \
+    if (isEqual) { \
+        printf("%sFAILED : \"%s\" == \"%s\"%s\n", COLOR_RED_BOLD, a, b, COLOR_RESET); \
+        assertions->test_failed = true; \
+    } \
+}
+
 // AUTRES
 
 #define IS_NULL(a) { \
