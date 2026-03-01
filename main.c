@@ -119,39 +119,41 @@
 #include "unit-test.h"
 
 void fn() {
-    EQUAL(1, 1);
-    NOT_EQUAL(1, 2);
-    LESS_THAN(1, 2);
-    LESS_OR_EQUAL_THAN(2,2);
-    BIGGER_THAN(3,2);
-    BIGGER_OR_EQUAL_THAN(3,3);
+    ASSERT_EQUAL(1, 1);
+    ASSERT_NOT_EQUAL(1, 2);
+    ASSERT_LESS_THAN(1, 2);
+    ASSERT_LESS_OR_EQUAL_THAN(2,2);
+    ASSERT_GREATER_THAN(3,2);
+    ASSERT_GREATER_OR_EQUAL_THAN(3,3);
 }
 
 void fn2() {
-    TRUE(true);
-    TRUE(false);
-    FALSE(true);
-    FALSE(false);
+    ASSERT_TRUE(true);
+    ASSERT_TRUE(false);
+    ASSERT_FALSE(true);
+    ASSERT_FALSE(false);
 }
 
 void fn3() {
-    EQUAL_STR("toto", "titi");
-    EQUAL_STR("toto", "toto");
+    ASSERT_EQUAL_STR("toto", "toto");
+    ASSERT_NOT_EQUAL_STR("toto", "titi");
+    ASSERT_NOT_EQUAL_STR("toto", "totot");
+    ASSERT_NOT_EQUAL_STR("tot", "toto");
 }
 
 void fn4() {
-    EQUAL(1., 1.);
-    NOT_EQUAL(1.2, 2);
-    LESS_THAN(1.99, 2);
-    LESS_OR_EQUAL_THAN(2, 2.);
-    BIGGER_THAN(3.14, 2);
-    BIGGER_OR_EQUAL_THAN(3.1, 3);
+    ASSERT_EQUAL(1., 1.);
+    ASSERT_NOT_EQUAL(1.2, 2);
+    ASSERT_LESS_THAN(1.99, 2);
+    ASSERT_LESS_OR_EQUAL_THAN(2, 2.);
+    ASSERT_GREATER_THAN(3.14, 2);
+    ASSERT_GREATER_OR_EQUAL_THAN(3.1, 3);
 }
 
 void fn5() {
     int tmp = 2;
-    IS_NULL(&tmp);
-    IS_NULL(NULL);
+    ASSERT_NULL(&tmp);
+    ASSERT_NULL(NULL);
 }
 
 int main() {
