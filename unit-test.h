@@ -124,17 +124,17 @@
 
 #define ASSERT_EQUAL_STR(a, b) { \
     assertions->assertions_total++; \
-    bool isASSERT_EQ = true; \
+    bool isEqual = true; \
     size_t i = 0; \
-    while (isASSERT_EQ && a[i] != '\0') { \
+    while (isEqual && a[i] != '\0') { \
         if (a[i] != b[i] || b[i] == '\0') { \
             printf("%sFAILED : \"%s\" != \"%s\"%s\n", COLOR_RED_BOLD, a, b, COLOR_RESET); \
-            isASSERT_EQ = false; \
+            isEqual = false; \
             assertions->test_failed = true; \
         } \
         i++; \
     } \
-    if (isASSERT_EQ) { \
+    if (isEqual) { \
         assertions->assertions_passed++; \
     } \
 }
