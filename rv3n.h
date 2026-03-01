@@ -1,14 +1,16 @@
 #ifndef RV3N_H
 #define RV3N_H
 
+#define _POSIX_C_SOURCE 200809L
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/mman.h>
 #include <stdbool.h>
-#include <stddef.h>
 #include <time.h>
+#include <string.h>
 
 //// INFORMATIONS DES TEST ////
 
@@ -54,185 +56,113 @@ static inline void print_value_ptr(void *x) { printf("%p", x); }
     void *: print_value_ptr,          \
     default: print_value_ptr)((x))
 
-//// FONCTIONS ASSERT ////
+////
+
+//// FONCTIONS EXCEPT ////
+
+// EVALUATION
+
+#define _EXPECT_EVAL(condition) ({         \
+    bool _passed = (condition);            \
+    tests_count->local_tests_total++;      \
+    if (_passed)                           \
+        tests_count->local_tests_passed++; \
+    else                                   \
+        tests_count->test_failed = true;   \
+    _passed;                               \
+})
 
 // NOMBRES
 
-#define ASSERT_EQUAL(x, y) {                                                            \
-    assertions->local_assertions_total++;                                               \
-    if (x != y) {                                                                       \
-        printf("%sN°%u FAILED : ", COLOR_RED_BOLD, assertions->local_assertions_total); \
+// La verification sur 'tests_count == NULL' nous permet de ne rien faire 
+// si on appelle EXPECT_xx en dehors d'une suite de tests
+#define EXPECT_EQUAL(x, y) do { \
+    if (tests_count && !_EXPECT_EVAL((x) == (y))) { \
+        printf("%sN°%u FAILED : ", COLOR_RED_BOLD, tests_count->local_tests_total); \
         PRINT_VALUE(x);                                                                 \
         printf(" != ");                                                                 \
         PRINT_VALUE(y);                                                                 \
-        printf(" (expected x == y)%s\n", COLOR_RESET);                                  \
-        assertions->test_failed = true;                                                 \
-    }                                                                                   \
-    else {                                                                              \
-        assertions->local_assertions_passed++;                                          \
-    }                                                                                   \
-}
+        printf(" (expected x == y)%s\n", COLOR_RESET);      \
+    } \
+} while(0)
 
-#define ASSERT_NOT_EQUAL(x, y) {                                                        \
-    assertions->local_assertions_total++;                                               \
-    if (x == y) {                                                                       \
-        printf("%sN°%u FAILED : ", COLOR_RED_BOLD, assertions->local_assertions_total); \
-        PRINT_VALUE(x);                                                                 \
-        printf(" == ");                                                                 \
-        PRINT_VALUE(y);                                                                 \
-        printf(" (expected x != y)%s\n", COLOR_RESET);                                  \
-        assertions->test_failed = true;                                                 \
-    }                                                                                   \
-    else {                                                                              \
-        assertions->local_assertions_passed++;                                          \
-    }                                                                                   \
-}
+#define EXPECT_NOT_EQUAL(x, y) do { \
+    if (tests_count && !_EXPECT_EVAL((x) != (y))) { \
+        printf("%sN°%u FAILED : ", COLOR_RED_BOLD, tests_count->local_tests_total); \
+        PRINT_VALUE(x); printf(" == "); PRINT_VALUE(y); \
+        printf(" (expected x != y)%s\n", COLOR_RESET); \
+    } \
+} while(0)
 
-#define ASSERT_LESS_THAN(x, y) {                                                        \
-    assertions->local_assertions_total++;                                               \
-    if (x >= y) {                                                                       \
-        printf("%sN°%u FAILED : ", COLOR_RED_BOLD, assertions->local_assertions_total); \
-        PRINT_VALUE(x);                                                                 \
-        printf(" >= ");                                                                 \
-        PRINT_VALUE(y);                                                                 \
-        printf(" (expected x < y)%s\n", COLOR_RESET);                                   \
-        assertions->test_failed = true;                                                 \
-    }                                                                                   \
-    else {                                                                              \
-        assertions->local_assertions_passed++;                                          \
-    }                                                                                   \
-}
+#define EXPECT_LESS_THAN(x, y) do { \
+    if (tests_count && !_EXPECT_EVAL((x) < (y))) { \
+        printf("%sN°%u FAILED : ", COLOR_RED_BOLD, tests_count->local_tests_total); \
+        PRINT_VALUE(x); printf(" >= "); PRINT_VALUE(y); \
+        printf(" (expected x < y)%s\n", COLOR_RESET); \
+    } \
+} while(0)
 
-#define ASSERT_GREATER_THAN(x, y) {                                                     \
-    assertions->local_assertions_total++;                                               \
-    if (x <= y) {                                                                       \
-        printf("%sN°%u FAILED : ", COLOR_RED_BOLD, assertions->local_assertions_total); \
-        PRINT_VALUE(x);                                                                 \
-        printf(" <= ");                                                                 \
-        PRINT_VALUE(y);                                                                 \
-        printf("(expected x > y)%s\n", COLOR_RESET);                                    \
-        assertions->test_failed = true;                                                 \
-    }                                                                                   \
-    else {                                                                              \
-        assertions->local_assertions_passed++;                                          \
-    }                                                                                   \
-}
+#define EXPECT_GREATER_THAN(x, y) do { \
+    if (tests_count && !_EXPECT_EVAL((x) > (y))) { \
+        printf("%sN°%u FAILED : ", COLOR_RED_BOLD, tests_count->local_tests_total); \
+        PRINT_VALUE(x); printf(" <= "); PRINT_VALUE(y); \
+        printf(" (expected x > y)%s\n", COLOR_RESET); \
+    } \
+} while(0)
 
-#define ASSERT_LESS_OR_EQUAL_THAN(x, y) {                                               \
-    assertions->local_assertions_total++;                                               \
-    if (x > y) {                                                                        \
-        printf("%sN°%u FAILED : ", COLOR_RED_BOLD, assertions->local_assertions_total); \
-        PRINT_VALUE(x);                                                                 \
-        printf(" > ");                                                                  \
-        PRINT_VALUE(y);                                                                 \
-        printf("(expected x <= y)%s\n", COLOR_RESET);                                   \
-        assertions->test_failed = true;                                                 \
-    }                                                                                   \
-    else {                                                                              \
-        assertions->local_assertions_passed++;                                          \
-    }                                                                                   \
-}
+#define EXPECT_LESS_OR_EQUAL_THAN(x, y) do { \
+    if (tests_count && !_EXPECT_EVAL((x) <= (y))) { \
+        printf("%sN°%u FAILED : ", COLOR_RED_BOLD, tests_count->local_tests_total); \
+        PRINT_VALUE(x); printf(" > "); PRINT_VALUE(y); \
+        printf(" (expected x <= y)%s\n", COLOR_RESET); \
+    } \
+} while(0)
 
-#define ASSERT_GREATER_OR_EQUAL_THAN(x, y) {                                            \
-    assertions->local_assertions_total++;                                               \
-    if (x < y) {                                                                        \
-        printf("%sN°%u FAILED : ", COLOR_RED_BOLD, assertions->local_assertions_total); \
-        PRINT_VALUE(x);                                                                 \
-        printf(" < ");                                                                  \
-        PRINT_VALUE(y);                                                                 \
-        printf("(expected x >= y)%s\n", COLOR_RESET);                                   \
-        assertions->test_failed = true;                                                 \
-    }                                                                                   \
-    else {                                                                              \
-        assertions->local_assertions_passed++;                                          \
-    }                                                                                   \
-}
+#define EXPECT_GREATER_OR_EQUAL_THAN(x, y) do { \
+    if (tests_count && !_EXPECT_EVAL((x) >= (y))) { \
+        printf("%sN°%u FAILED : ", COLOR_RED_BOLD, tests_count->local_tests_total); \
+        PRINT_VALUE(x); printf(" < "); PRINT_VALUE(y); \
+        printf(" (expected x >= y)%s\n", COLOR_RESET); \
+    } \
+} while(0)
 
 // BOOLEENS
 
-#define ASSERT_TRUE(x) {                                                                                                                \
-    assertions->local_assertions_total++;                                                                                               \
-    if (x == false) {                                                                                                                   \
-        printf("%sN°%u FAILED : x == false (expected x == true)%s\n", COLOR_RED_BOLD, assertions->local_assertions_total, COLOR_RESET); \
-        assertions->test_failed = true;                                                                                                 \
-    }                                                                                                                                   \
-    else {                                                                                                                              \
-        assertions->local_assertions_passed++;                                                                                          \
-    }                                                                                                                                   \
-}
+#define EXPECT_TRUE(x) do { \
+    if (tests_count && !_EXPECT_EVAL((x) == true)) \
+        printf("%sN°%u FAILED : x == false (expected x == true)%s\n", COLOR_RED_BOLD, tests_count->local_tests_total, COLOR_RESET); \
+} while(0)
 
-#define ASSERT_FALSE(x) {                                                                                                               \
-    assertions->local_assertions_total++;                                                                                               \
-    if (x == true) {                                                                                                                    \
-        printf("%sN°%u FAILED : x == true (expected x == false)%s\n", COLOR_RED_BOLD, assertions->local_assertions_total, COLOR_RESET); \
-        assertions->test_failed = true;                                                                                                 \
-    }                                                                                                                                   \
-    else {                                                                                                                              \
-        assertions->local_assertions_passed++;                                                                                          \
-    }                                                                                                                                   \
-}
+#define EXPECT_FALSE(x) do { \
+    if (tests_count && !_EXPECT_EVAL((x) == false)) \
+        printf("%sN°%u FAILED : x == true (expected x == false)%s\n", COLOR_RED_BOLD, tests_count->local_tests_total, COLOR_RESET); \
+} while(0)
 
 // CHAINES DE CARACTERES
 
-#define ASSERT_EQUAL_STR(x, y) {                                                                                                                     \
-    assertions->local_assertions_total++;                                                                                                            \
-    bool isEqual = true;                                                                                                                             \
-    size_t i = 0;                                                                                                                                    \
-    while (isEqual && x[i] != '\0') {                                                                                                                \
-        if (x[i] != y[i] || x[i] == '\0') {                                                                                                          \
-            printf("%sN°%u FAILED : \"%s\" != \"%s\" (expected x == y)%s\n", COLOR_RED_BOLD, assertions->local_assertions_total, x, y, COLOR_RESET); \
-            isEqual = false;                                                                                                                         \
-            assertions->test_failed = true;                                                                                                          \
-        }                                                                                                                                            \
-        i++;                                                                                                                                         \
-    }                                                                                                                                                \
-    if (isEqual) {                                                                                                                                   \
-        assertions->local_assertions_passed++;                                                                                                       \
-    }                                                                                                                                                \
-}
+#define EXPECT_EQUAL_STR(x, y) do { \
+    if (tests_count && !_EXPECT_EVAL(strcmp((x), (y)) == 0)) \
+        printf("%sN°%u FAILED : \"%s\" != \"%s\" (expected x == y)%s\n", COLOR_RED_BOLD, tests_count->local_tests_total, x, y, COLOR_RESET); \
+} while(0)
 
-#define ASSERT_NOT_EQUAL_STR(x, y) {                                                                                                             \
-    assertions->local_assertions_total++;                                                                                                        \
-    size_t i = 0;                                                                                                                                \
-    while (x[i] != '\0' && y[i] != '\0' && x[i] == y[i]) {                                                                                       \
-        i++;                                                                                                                                     \
-    }                                                                                                                                            \
-    if (x[i] == y[i]) {                                                                                                                          \
-        printf("%sN°%u FAILED : \"%s\" == \"%s\" (expected x != y)%s\n", COLOR_RED_BOLD, assertions->local_assertions_total, x, y, COLOR_RESET); \
-        assertions->test_failed = true;                                                                                                          \
-    }                                                                                                                                            \
-    else {                                                                                                                                       \
-        assertions->local_assertions_passed++;                                                                                                   \
-    }                                                                                                                                            \
-}
+#define EXPECT_NOT_EQUAL_STR(x, y) do { \
+    if (tests_count && !_EXPECT_EVAL(strcmp((x), (y)) != 0)) \
+        printf("%sN°%u FAILED : \"%s\" == \"%s\" (expected x != y)%s\n", COLOR_RED_BOLD, tests_count->local_tests_total, x, y, COLOR_RESET); \
+} while(0)
 
-// AUTRES
+// POINTEURS
 
-#define ASSERT_NULL(x) {                                                                \
-    assertions->local_assertions_total++;                                               \
-    if (x != NULL) {                                                                    \
-        printf("%sN°%u FAILED : ", COLOR_RED_BOLD, assertions->local_assertions_total); \
-        PRINT_VALUE(x);                                                                 \
-        printf(" != NULL (expected x == NULL)%s\n", COLOR_RESET);                       \
-        assertions->test_failed = true;                                                 \
-    }                                                                                   \
-    else {                                                                              \
-        assertions->local_assertions_passed++;                                          \
-    }                                                                                   \
-}
+#define EXPECT_NULL(x) do { \
+    if (tests_count && !_EXPECT_EVAL((x) == NULL)) { \
+        printf("%sN°%u FAILED : ", COLOR_RED_BOLD, tests_count->local_tests_total); \
+        PRINT_VALUE(x); printf(" != NULL (expected x == NULL)%s\n", COLOR_RESET); \
+    } \
+} while(0)
 
-#define ASSERT_NOT_NULL(x) {                                                            \
-    assertions->local_assertions_total++;                                               \
-    if (x == NULL) {                                                                    \
-        printf("%sN°%u FAILED : ", COLOR_RED_BOLD, assertions->local_assertions_total); \
-        PRINT_VALUE(x);                                                                 \
-        printf(" == NULL (expected x != NULL)%s\n", COLOR_RESET);                       \
-        assertions->test_failed = true;                                                 \
-    }                                                                                   \
-    else {                                                                              \
-        assertions->local_assertions_passed++;                                          \
-    }                                                                                   \
-}
+#define EXPECT_NOT_NULL(x) do { \
+    if (tests_count && !_EXPECT_EVAL((x) != NULL)) \
+        printf("%sN°%u FAILED : x == NULL (expected x != NULL)%s\n", COLOR_RED_BOLD, tests_count->local_tests_total, COLOR_RESET); \
+} while(0)
 
 ////
 
@@ -246,12 +176,12 @@ typedef struct {
 } Test;
 
 typedef struct {
-    unsigned local_assertions_passed;
-    unsigned local_assertions_total;
-    unsigned global_assertions_passed;
-    unsigned global_assertions_total;
+    unsigned local_tests_passed;
+    unsigned local_tests_total;
+    unsigned global_tests_passed;
+    unsigned global_tests_total;
     bool test_failed;
-} AssertionsCount;
+} TestsCount;
 
 ////
 
@@ -262,7 +192,7 @@ size_t capacity = 0;
 unsigned suites_passed = 0;
 unsigned suites_failed = 0;
 Test *tests = NULL;
-AssertionsCount *assertions = NULL;
+TestsCount *tests_count = NULL;
 
 ////
 
@@ -284,9 +214,9 @@ void add_suite(SuiteFonction function, char *name) {
 void run_tests() {
     printf("%srv3n%s, a minimal unit test utility to rapidly test your app !%s\n", COLOR_WHITE_BOLD, COLOR_WHITE, COLOR_RESET);
 
-    assertions = mmap(NULL, sizeof(AssertionsCount), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-    assertions->global_assertions_passed = 0;
-    assertions->global_assertions_total  = 0;
+    tests_count = mmap(NULL, sizeof(TestsCount), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    tests_count->global_tests_passed = 0;
+    tests_count->global_tests_total  = 0;
 
     struct timespec start, end;
     clock_gettime(CLOCK_MONOTONIC, &start);
@@ -294,9 +224,9 @@ void run_tests() {
     for (size_t i=0; i<size; i++) {
         printf("\n%s--- SUITE %lu : %s ---%s\n", COLOR_WHITE, i+1, tests[i].name, COLOR_RESET);
         
-        assertions->test_failed = false;
-        assertions->local_assertions_passed = 0;
-        assertions->local_assertions_total  = 0;
+        tests_count->test_failed = false;
+        tests_count->local_tests_passed = 0;
+        tests_count->local_tests_total  = 0;
 
         pid_t p;
         // Nous sommes dans le processus fils
@@ -305,14 +235,14 @@ void run_tests() {
 
             free(tests);
 
-            assertions->global_assertions_total += assertions->local_assertions_total;
-            assertions->global_assertions_passed += assertions->local_assertions_passed;
-            if (assertions->test_failed) {
-                printf("%s > FAILED %d/%d %s\n", COLOR_WHITE_BOLD_BG_RED, assertions->local_assertions_passed, assertions->local_assertions_total, COLOR_RESET);
+            tests_count->global_tests_total += tests_count->local_tests_total;
+            tests_count->global_tests_passed += tests_count->local_tests_passed;
+            if (tests_count->test_failed) {
+                printf("%s > FAILED %d/%d %s\n", COLOR_WHITE_BOLD_BG_RED, tests_count->local_tests_passed, tests_count->local_tests_total, COLOR_RESET);
                 exit(EXIT_FAILURE);
             }
             else {
-                printf("%s > PASSED %d/%d %s\n", COLOR_WHITE_BOLD_BG_GREEN, assertions->local_assertions_passed, assertions->local_assertions_total, COLOR_RESET);
+                printf("%s > PASSED %d/%d %s\n", COLOR_WHITE_BOLD_BG_GREEN, tests_count->local_tests_passed, tests_count->local_tests_total, COLOR_RESET);
                 exit(EXIT_SUCCESS);
             }
         }
@@ -336,14 +266,15 @@ void run_tests() {
 
     printf("\n%s --- SUMMARY --- %s\n", COLOR_WHITE_BOLD_BG_GRAY, COLOR_RESET);
 
-    const unsigned max_total = (suites_passed + suites_failed > assertions->global_assertions_total) ? suites_passed + suites_failed : assertions->global_assertions_total;
+    const unsigned max_total = (suites_passed + suites_failed > tests_count->global_tests_total) ? suites_passed + suites_failed : tests_count->global_tests_total;
     const int width = snprintf(NULL, 0, "%u", max_total);
 
     printf("%s[SUITES]   TOTAL %*u | %s%*u PASSED %s| %s%*u FAILED%s\n", COLOR_WHITE_BOLD, width, suites_passed + suites_failed, COLOR_GREEN_BOLD, width, suites_passed, COLOR_WHITE_BOLD, COLOR_RED_BOLD, width, suites_failed, COLOR_RESET);
-    printf("%s[TESTS]    TOTAL %*u | %s%*u PASSED %s| %s%*u FAILED%s\n", COLOR_WHITE_BOLD, width, assertions->global_assertions_total, COLOR_GREEN_BOLD, width, assertions->global_assertions_passed, COLOR_WHITE_BOLD, COLOR_RED_BOLD, width, assertions->global_assertions_total - assertions->global_assertions_passed, COLOR_RESET);
+    printf("%s[TESTS]    TOTAL %*u | %s%*u PASSED %s| %s%*u FAILED%s\n", COLOR_WHITE_BOLD, width, tests_count->global_tests_total, COLOR_GREEN_BOLD, width, tests_count->global_tests_passed, COLOR_WHITE_BOLD, COLOR_RED_BOLD, width, tests_count->global_tests_total - tests_count->global_tests_passed, COLOR_RESET);
     printf("%s[ELAPSED] %*.9lf s%s\n", COLOR_GRAY_BOLD, width + 10, elapsed, COLOR_RESET);
     free(tests);
     tests = NULL;
+    tests_count = NULL;
 }
 
 #endif
