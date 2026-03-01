@@ -30,7 +30,7 @@
 
 // NOMBRES
 
-#define EQUAL(a, b) { \
+#define ASSERT_EQUAL(a, b) { \
     assertions->assertions_total++; \
     if (a != b) { \
         printf("%sFAILED : %d != %d%s\n", COLOR_RED_BOLD, a, b, COLOR_RESET); \
@@ -41,7 +41,7 @@
     } \
 }
 
-#define NOT_EQUAL(a, b) { \
+#define ASSERT_NOT_EQUAL(a, b) { \
     assertions->assertions_total++; \
     if (a == b) { \
         printf("%sFAILED : %d == %d%s\n", COLOR_RED_BOLD, a, b, COLOR_RESET); \
@@ -52,7 +52,7 @@
     } \
 }
 
-#define LESS_THAN(a, b) { \
+#define ASSERT_LESS_THAN(a, b) { \
     assertions->assertions_total++; \
     if (a >= b) { \
         printf("%sFAILED : %d >= %d%s\n", COLOR_RED_BOLD, a, b, COLOR_RESET); \
@@ -63,7 +63,7 @@
     } \
 }
 
-#define BIGGER_THAN(a, b) { \
+#define ASSERT_GREATER_THAN(a, b) { \
     assertions->assertions_total++; \
     if (a <= b) { \
         printf("%sFAILED : %d <= %d%s\n", COLOR_RED_BOLD, a, b, COLOR_RESET); \
@@ -74,7 +74,7 @@
     } \
 }
 
-#define LESS_OR_EQUAL_THAN(a, b) { \
+#define ASSERT_LESS_OR_EQUAL_THAN(a, b) { \
     assertions->assertions_total++; \
     if (a > b) { \
         printf("%sFAILED : %d > %d%s\n", COLOR_RED_BOLD, a, b, COLOR_RESET); \
@@ -85,7 +85,7 @@
     } \
 }
 
-#define BIGGER_OR_EQUAL_THAN(a, b) { \
+#define ASSERT_GREATER_OR_EQUAL_THAN(a, b) { \
     assertions->assertions_total++; \
     if (a < b) { \
         printf("%sFAILED : %d < %d%s\n", COLOR_RED_BOLD, a, b, COLOR_RESET); \
@@ -98,7 +98,7 @@
 
 // BOOLEENS
 
-#define TRUE(a) { \
+#define ASSERT_TRUE(a) { \
     assertions->assertions_total++; \
     if (a == false) { \
         printf("%sFAILED : false%s\n", COLOR_RED_BOLD, COLOR_RESET); \
@@ -109,7 +109,7 @@
     } \
 }
 
-#define FALSE(a) { \
+#define ASSERT_FALSE(a) { \
     assertions->assertions_total++; \
     if (a == true) { \
         printf("%sFAILED : true%s\n", COLOR_RED_BOLD, COLOR_RESET); \
@@ -122,24 +122,24 @@
 
 // CHAINES DE CARACTERES
 
-#define EQUAL_STR(a, b) { \
+#define ASSERT_EQUAL_STR(a, b) { \
     assertions->assertions_total++; \
-    bool isEqual = true; \
+    bool isASSERT_EQ = true; \
     size_t i = 0; \
-    while (isEqual && a[i] != '\0') { \
+    while (isASSERT_EQ && a[i] != '\0') { \
         if (a[i] != b[i] || b[i] == '\0') { \
             printf("%sFAILED : \"%s\" != \"%s\"%s\n", COLOR_RED_BOLD, a, b, COLOR_RESET); \
-            isEqual = false; \
+            isASSERT_EQ = false; \
             assertions->test_failed = true; \
         } \
         i++; \
     } \
-    if (isEqual) { \
+    if (isASSERT_EQ) { \
         assertions->assertions_passed++; \
     } \
 }
 
-#define NOT_EQUAL_STR(a, b) { \
+#define ASSERT_NOT_EQUAL_STR(a, b) { \
     assertions->assertions_total++; \
     size_t i = 0; \
     while (a[i] != '\0' && b[i] != '\0' && a[i] == b[i]) { \
@@ -156,7 +156,7 @@
 
 // AUTRES
 
-#define IS_NULL(a) { \
+#define ASSERT_NULL(a) { \
     assertions->assertions_total++; \
     if (a != NULL) { \
         printf("%sFAILED : %p != NULL%s\n", COLOR_RED_BOLD, a, COLOR_RESET); \
@@ -228,6 +228,8 @@ void run_tests() {
         // Nous sommes dans le processus fils
         if ((p = fork()) == 0) {
             tests[i].function();
+
+            free(tests);
 
             if (assertions->test_failed) {
                 printf("%s> FAILED %d/%d%s\n", COLOR_RED_BOLD, assertions->assertions_passed, assertions->assertions_total, COLOR_RESET);
