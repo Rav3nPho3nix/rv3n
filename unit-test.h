@@ -57,14 +57,14 @@ static inline void print_value_ptr(void *x) { printf("%p", x); }
 
 // NOMBRES
 
-#define ASSERT_EQUAL(a, b) {                                                      \
+#define ASSERT_EQUAL(x, y) {                                                      \
     assertions->assertions_total++;                                               \
-    if (a != b) {                                                                 \
+    if (x != y) {                                                                 \
         printf("%sN°%u FAILED : ", COLOR_RED_BOLD, assertions->assertions_total); \
-        PRINT_VALUE(a);                                                           \
+        PRINT_VALUE(x);                                                           \
         printf(" != ");                                                           \
-        PRINT_VALUE(b);                                                           \
-        printf("%s\n", COLOR_RESET);                                              \
+        PRINT_VALUE(y);                                                           \
+        printf(" (expected x == y)%s\n", COLOR_RESET);                            \
         assertions->test_failed = true;                                           \
     }                                                                             \
     else {                                                                        \
@@ -72,14 +72,14 @@ static inline void print_value_ptr(void *x) { printf("%p", x); }
     }                                                                             \
 }
 
-#define ASSERT_NOT_EQUAL(a, b) {                                                  \
+#define ASSERT_NOT_EQUAL(x, y) {                                                  \
     assertions->assertions_total++;                                               \
-    if (a == b) {                                                                 \
+    if (x == y) {                                                                 \
         printf("%sN°%u FAILED : ", COLOR_RED_BOLD, assertions->assertions_total); \
-        PRINT_VALUE(a);                                                           \
+        PRINT_VALUE(x);                                                           \
         printf(" == ");                                                           \
-        PRINT_VALUE(b);                                                           \
-        printf("%s\n", COLOR_RESET);                                              \
+        PRINT_VALUE(y);                                                           \
+        printf(" (expected x != y)%s\n", COLOR_RESET);                            \
         assertions->test_failed = true;                                           \
     }                                                                             \
     else {                                                                        \
@@ -87,14 +87,14 @@ static inline void print_value_ptr(void *x) { printf("%p", x); }
     }                                                                             \
 }
 
-#define ASSERT_LESS_THAN(a, b) {                                                  \
+#define ASSERT_LESS_THAN(x, y) {                                                  \
     assertions->assertions_total++;                                               \
-    if (a >= b) {                                                                 \
+    if (x >= y) {                                                                 \
         printf("%sN°%u FAILED : ", COLOR_RED_BOLD, assertions->assertions_total); \
-        PRINT_VALUE(a);                                                           \
+        PRINT_VALUE(x);                                                           \
         printf(" >= ");                                                           \
-        PRINT_VALUE(b);                                                           \
-        printf("%s\n", COLOR_RESET);                                              \
+        PRINT_VALUE(y);                                                           \
+        printf(" (expected x < y)%s\n", COLOR_RESET);                             \
         assertions->test_failed = true;                                           \
     }                                                                             \
     else {                                                                        \
@@ -102,14 +102,14 @@ static inline void print_value_ptr(void *x) { printf("%p", x); }
     }                                                                             \
 }
 
-#define ASSERT_GREATER_THAN(a, b) {                                               \
+#define ASSERT_GREATER_THAN(x, y) {                                               \
     assertions->assertions_total++;                                               \
-    if (a <= b) {                                                                 \
+    if (x <= y) {                                                                 \
         printf("%sN°%u FAILED : ", COLOR_RED_BOLD, assertions->assertions_total); \
-        PRINT_VALUE(a);                                                           \
+        PRINT_VALUE(x);                                                           \
         printf(" <= ");                                                           \
-        PRINT_VALUE(b);                                                           \
-        printf("%s\n", COLOR_RESET);                                              \
+        PRINT_VALUE(y);                                                           \
+        printf("(expected x > y)%s\n", COLOR_RESET);                              \
         assertions->test_failed = true;                                           \
     }                                                                             \
     else {                                                                        \
@@ -117,14 +117,14 @@ static inline void print_value_ptr(void *x) { printf("%p", x); }
     }                                                                             \
 }
 
-#define ASSERT_LESS_OR_EQUAL_THAN(a, b) {                                         \
+#define ASSERT_LESS_OR_EQUAL_THAN(x, y) {                                         \
     assertions->assertions_total++;                                               \
-    if (a > b) {                                                                  \
+    if (x > y) {                                                                  \
         printf("%sN°%u FAILED : ", COLOR_RED_BOLD, assertions->assertions_total); \
-        PRINT_VALUE(a);                                                           \
+        PRINT_VALUE(x);                                                           \
         printf(" > ");                                                            \
-        PRINT_VALUE(b);                                                           \
-        printf("%s\n", COLOR_RESET);                                              \
+        PRINT_VALUE(y);                                                           \
+        printf("(expected x <= y)%s\n", COLOR_RESET);                             \
         assertions->test_failed = true;                                           \
     }                                                                             \
     else {                                                                        \
@@ -132,14 +132,14 @@ static inline void print_value_ptr(void *x) { printf("%p", x); }
     }                                                                             \
 }
 
-#define ASSERT_GREATER_OR_EQUAL_THAN(a, b) {                                      \
+#define ASSERT_GREATER_OR_EQUAL_THAN(x, y) {                                      \
     assertions->assertions_total++;                                               \
-    if (a < b) {                                                                  \
+    if (x < y) {                                                                  \
         printf("%sN°%u FAILED : ", COLOR_RED_BOLD, assertions->assertions_total); \
-        PRINT_VALUE(a);                                                           \
+        PRINT_VALUE(x);                                                           \
         printf(" < ");                                                            \
-        PRINT_VALUE(b);                                                           \
-        printf("%s\n", COLOR_RESET);                                              \
+        PRINT_VALUE(y);                                                           \
+        printf("(expected x >= y)%s\n", COLOR_RESET);                             \
         assertions->test_failed = true;                                           \
     }                                                                             \
     else {                                                                        \
@@ -149,70 +149,70 @@ static inline void print_value_ptr(void *x) { printf("%p", x); }
 
 // BOOLEENS
 
-#define ASSERT_TRUE(a) {                                                                                \
-    assertions->assertions_total++;                                                                     \
-    if (a == false) {                                                                                   \
-        printf("%sN°%u FAILED : false%s\n", COLOR_RED_BOLD, assertions->assertions_total, COLOR_RESET); \
-        assertions->test_failed = true;                                                                 \
-    }                                                                                                   \
-    else {                                                                                              \
-        assertions->assertions_passed++;                                                                \
-    }                                                                                                   \
+#define ASSERT_TRUE(x) {                                                                                                          \
+    assertions->assertions_total++;                                                                                               \
+    if (x == false) {                                                                                                             \
+        printf("%sN°%u FAILED : x == false (expected x == true)%s\n", COLOR_RED_BOLD, assertions->assertions_total, COLOR_RESET); \
+        assertions->test_failed = true;                                                                                           \
+    }                                                                                                                             \
+    else {                                                                                                                        \
+        assertions->assertions_passed++;                                                                                          \
+    }                                                                                                                             \
 }
 
-#define ASSERT_FALSE(a) {                                                                              \
-    assertions->assertions_total++;                                                                    \
-    if (a == true) {                                                                                   \
-        printf("%sN°%u FAILED : true%s\n", COLOR_RED_BOLD, assertions->assertions_total, COLOR_RESET); \
-        assertions->test_failed = true;                                                                \
-    }                                                                                                  \
-    else {                                                                                             \
-        assertions->assertions_passed++;                                                               \
-    }                                                                                                  \
+#define ASSERT_FALSE(x) {                                                                                                         \
+    assertions->assertions_total++;                                                                                               \
+    if (x == true) {                                                                                                              \
+        printf("%sN°%u FAILED : x == true (expected x == false)%s\n", COLOR_RED_BOLD, assertions->assertions_total, COLOR_RESET); \
+        assertions->test_failed = true;                                                                                           \
+    }                                                                                                                             \
+    else {                                                                                                                        \
+        assertions->assertions_passed++;                                                                                          \
+    }                                                                                                                             \
 }
 
 // CHAINES DE CARACTERES
 
-#define ASSERT_EQUAL_STR(a, b) {                                                                                             \
-    assertions->assertions_total++;                                                                                          \
-    bool isEqual = true;                                                                                                     \
-    size_t i = 0;                                                                                                            \
-    while (isEqual && a[i] != '\0') {                                                                                        \
-        if (a[i] != b[i] || b[i] == '\0') {                                                                                  \
-            printf("%sN°%u FAILED : \"%s\" != \"%s\"%s\n", COLOR_RED_BOLD, assertions->assertions_total, a, b, COLOR_RESET); \
-            isEqual = false;                                                                                                 \
-            assertions->test_failed = true;                                                                                  \
-        }                                                                                                                    \
-        i++;                                                                                                                 \
-    }                                                                                                                        \
-    if (isEqual) {                                                                                                           \
-        assertions->assertions_passed++;                                                                                     \
-    }                                                                                                                        \
+#define ASSERT_EQUAL_STR(x, y) {                                                                                                               \
+    assertions->assertions_total++;                                                                                                            \
+    bool isEqual = true;                                                                                                                       \
+    size_t i = 0;                                                                                                                              \
+    while (isEqual && x[i] != '\0') {                                                                                                          \
+        if (x[i] != y[i] || x[i] == '\0') {                                                                                                    \
+            printf("%sN°%u FAILED : \"%s\" != \"%s\" (expected x == y)%s\n", COLOR_RED_BOLD, assertions->assertions_total, x, y, COLOR_RESET); \
+            isEqual = false;                                                                                                                   \
+            assertions->test_failed = true;                                                                                                    \
+        }                                                                                                                                      \
+        i++;                                                                                                                                   \
+    }                                                                                                                                          \
+    if (isEqual) {                                                                                                                             \
+        assertions->assertions_passed++;                                                                                                       \
+    }                                                                                                                                          \
 }
 
-#define ASSERT_NOT_EQUAL_STR(a, b) {                                                                                     \
-    assertions->assertions_total++;                                                                                      \
-    size_t i = 0;                                                                                                        \
-    while (a[i] != '\0' && b[i] != '\0' && a[i] == b[i]) {                                                               \
-        i++;                                                                                                             \
-    }                                                                                                                    \
-    if (a[i] == b[i]) {                                                                                                  \
-        printf("%sN°%u FAILED : \"%s\" == \"%s\"%s\n", COLOR_RED_BOLD, assertions->assertions_total, a, b, COLOR_RESET); \
-        assertions->test_failed = true;                                                                                  \
-    }                                                                                                                    \
-    else {                                                                                                               \
-        assertions->assertions_passed++;                                                                                 \
-    }                                                                                                                    \
+#define ASSERT_NOT_EQUAL_STR(x, y) {                                                                                                       \
+    assertions->assertions_total++;                                                                                                        \
+    size_t i = 0;                                                                                                                          \
+    while (x[i] != '\0' && y[i] != '\0' && x[i] == y[i]) {                                                                                 \
+        i++;                                                                                                                               \
+    }                                                                                                                                      \
+    if (x[i] == y[i]) {                                                                                                                    \
+        printf("%sN°%u FAILED : \"%s\" == \"%s\" (expected x != y)%s\n", COLOR_RED_BOLD, assertions->assertions_total, x, y, COLOR_RESET); \
+        assertions->test_failed = true;                                                                                                    \
+    }                                                                                                                                      \
+    else {                                                                                                                                 \
+        assertions->assertions_passed++;                                                                                                   \
+    }                                                                                                                                      \
 }
 
 // AUTRES
 
-#define ASSERT_NULL(a) {                                                          \
+#define ASSERT_NULL(x) {                                                          \
     assertions->assertions_total++;                                               \
-    if (a != NULL) {                                                              \
+    if (x != NULL) {                                                              \
         printf("%sN°%u FAILED : ", COLOR_RED_BOLD, assertions->assertions_total); \
-        PRINT_VALUE(a);                                                           \
-        printf(" != NULL%s\n", COLOR_RESET);                                      \
+        PRINT_VALUE(x);                                                           \
+        printf(" != NULL (expected x == NULL)%s\n", COLOR_RESET);                 \
         assertions->test_failed = true;                                           \
     }                                                                             \
     else {                                                                        \
@@ -220,12 +220,12 @@ static inline void print_value_ptr(void *x) { printf("%p", x); }
     }                                                                             \
 }
 
-#define ASSERT_NOT_NULL(a) {                                                      \
+#define ASSERT_NOT_NULL(x) {                                                      \
     assertions->assertions_total++;                                               \
-    if (a == NULL) {                                                              \
+    if (x == NULL) {                                                              \
         printf("%sN°%u FAILED : ", COLOR_RED_BOLD, assertions->assertions_total); \
-        PRINT_VALUE(a);                                                           \
-        printf(" == NULL%s\n", COLOR_RESET);                                      \
+        PRINT_VALUE(x);                                                           \
+        printf(" == NULL (expected x != NULL)%s\n", COLOR_RESET);                 \
         assertions->test_failed = true;                                           \
     }                                                                             \
     else {                                                                        \
@@ -301,11 +301,11 @@ void run_tests() {
             free(tests);
 
             if (assertions->test_failed) {
-                printf("%s> FAILED %d/%d%s\n", COLOR_WHITE_BOLD_BG_RED, assertions->assertions_passed, assertions->assertions_total, COLOR_RESET);
+                printf("%s > FAILED %d/%d %s\n", COLOR_WHITE_BOLD_BG_RED, assertions->assertions_passed, assertions->assertions_total, COLOR_RESET);
                 exit(EXIT_FAILURE);
             }
             else {
-                printf("%s> PASSED %d/%d%s\n", COLOR_WHITE_BOLD_BG_GREEN, assertions->assertions_passed, assertions->assertions_total, COLOR_RESET);
+                printf("%s > PASSED %d/%d %s\n", COLOR_WHITE_BOLD_BG_GREEN, assertions->assertions_passed, assertions->assertions_total, COLOR_RESET);
                 exit(EXIT_SUCCESS);
             }
         }
