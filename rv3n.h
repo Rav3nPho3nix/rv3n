@@ -1,5 +1,5 @@
-#ifndef UNIT_TEST_H
-#define UNIT_TEST_H
+#ifndef RV3N_H
+#define RV3N_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -334,7 +334,6 @@ void run_tests() {
                     (end.tv_nsec - start.tv_nsec) / 1e9;
     
     printf("%sELAPSED TIME : %.9f s%s\n", COLOR_WHITE_BOLD, elapsed, COLOR_RESET);
-    
     free(tests);
 }
 
