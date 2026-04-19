@@ -166,6 +166,131 @@ static inline void print_value_ptr(void *x) { printf("%p", x); }
 
 ////
 
+//// FONCTIONS ASSERT ////
+
+// EVALUATION
+
+#define _ASSERT_EVAL(condition) ({ \
+    bool _passed = (condition);   \
+    if (!_passed) {               \
+        printf("%sASSERTION FAILED: ", COLOR_RED_BOLD); \
+    }                             \
+    _passed;                      \
+})
+
+// NOMBRES
+
+#define ASSERT_EQUAL(x, y) do { \
+    if (!_ASSERT_EVAL((x) == (y))) { \
+        PRINT_VALUE(x); \
+        printf(" != "); \
+        PRINT_VALUE(y); \
+        printf(" (expected %s == %s)\n", #x, #y); \
+        exit(EXIT_FAILURE); \
+    } \
+} while(0)
+
+#define ASSERT_NOT_EQUAL(x, y) do { \
+    if (!_ASSERT_EVAL((x) != (y))) { \
+        PRINT_VALUE(x); \
+        printf(" == "); \
+        PRINT_VALUE(y); \
+        printf(" (expected %s != %s)\n", #x, #y); \
+        exit(EXIT_FAILURE); \
+    } \
+} while(0)
+
+#define ASSERT_LESS_THAN(x, y) do { \
+    if (!_ASSERT_EVAL((x) < (y))) { \
+        PRINT_VALUE(x); \
+        printf(" >= "); \
+        PRINT_VALUE(y); \
+        printf(" (expected %s < %s)\n", #x, #y); \
+        exit(EXIT_FAILURE); \
+    } \
+} while(0)
+
+#define ASSERT_GREATER_THAN(x, y) do { \
+    if (!_ASSERT_EVAL((x) > (y))) { \
+        PRINT_VALUE(x); \
+        printf(" <= "); \
+        PRINT_VALUE(y); \
+        printf(" (expected %s > %s)\n", #x, #y); \
+        exit(EXIT_FAILURE); \
+    } \
+} while(0)
+
+#define ASSERT_LESS_OR_EQUAL_THAN(x, y) do { \
+    if (!_ASSERT_EVAL((x) <= (y))) { \
+        PRINT_VALUE(x); \
+        printf(" > "); \
+        PRINT_VALUE(y); \
+        printf(" (expected %s <= %s)\n", #x, #y); \
+        exit(EXIT_FAILURE); \
+    } \
+} while(0)
+
+#define ASSERT_GREATER_OR_EQUAL_THAN(x, y) do { \
+    if (!_ASSERT_EVAL((x) >= (y))) { \
+        PRINT_VALUE(x); \
+        printf(" < "); \
+        PRINT_VALUE(y); \
+        printf(" (expected %s >= %s)\n", #x, #y); \
+        exit(EXIT_FAILURE); \
+    } \
+} while(0)
+
+// BOOLEENS
+
+#define ASSERT_TRUE(x) do { \
+    if (!_ASSERT_EVAL((x) == true)) { \
+        printf("%s == false (expected %s == true)\n", #x, #x); \
+        exit(EXIT_FAILURE); \
+    } \
+} while(0)
+
+#define ASSERT_FALSE(x) do { \
+    if (!_ASSERT_EVAL((x) == false)) { \
+        printf("%s == true (expected %s == false)\n", #x, #x); \
+        exit(EXIT_FAILURE); \
+    } \
+} while(0)
+
+// CHAINES DE CARACTERES
+
+#define ASSERT_EQUAL_STR(x, y) do { \
+    if (!_ASSERT_EVAL(strcmp((x), (y)) == 0)) { \
+        printf("\"%s\" != \"%s\" (expected %s == %s)\n", x, y, #x, #y); \
+        exit(EXIT_FAILURE); \
+    } \
+} while(0)
+
+#define ASSERT_NOT_EQUAL_STR(x, y) do { \
+    if (!_ASSERT_EVAL(strcmp((x), (y)) != 0)) { \
+        printf("\"%s\" == \"%s\" (expected %s != %s)\n", x, y, #x, #y); \
+        exit(EXIT_FAILURE); \
+    } \
+} while(0)
+
+// POINTEURS
+
+#define ASSERT_NULL(x) do { \
+    if (!_ASSERT_EVAL((x) == NULL)) { \
+        PRINT_VALUE(x); \
+        printf(" != NULL (expected %s == NULL)\n", #x); \
+        exit(EXIT_FAILURE); \
+    } \
+} while(0)
+
+#define ASSERT_NOT_NULL(x) do { \
+    if (!_ASSERT_EVAL((x) != NULL)) { \
+        printf("%s == NULL (expected %s != NULL)\n", #x, #x); \
+        exit(EXIT_FAILURE); \
+    } \
+} while(0)
+
+////
+
 //// TYPES STRUCTURES ////
 
 typedef void (*SuiteFonction)();

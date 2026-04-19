@@ -1,5 +1,5 @@
-main: main.c unit-test.h
-	gcc main.c -o main.out -g -pg
+main.out: main.c rv3n.h
+	gcc main.c --std=c17 -o main.out
 
 clean:
 	rm *.out
