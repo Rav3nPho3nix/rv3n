@@ -1,3 +1,2 @@
 *.out
-main.c
-Makefile
+*.o
