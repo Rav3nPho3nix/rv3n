@@ -29,7 +29,7 @@ void fn4()
 {
     EXPECT_EQUAL(1., 1.);
     EXPECT_NOT_EQUAL(1.2, 2);
-    // EXPECT_NOT_EQUAL(1.2, 1.2);
+    EXPECT_NOT_EQUAL(1.2, 1.2);
     EXPECT_LESS_THAN(1.99, 2);
     EXPECT_LESS_OR_EQUAL_THAN(2, 2.);
     EXPECT_GREATER_THAN(3.14, 2);
@@ -60,5 +60,4 @@ int main()
     ASSERT_EQUAL(2, 3);
     
     run_tests();
-
 }
